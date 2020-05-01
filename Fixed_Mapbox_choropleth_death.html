@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+	
+	<title>New Jersey Deaths per County</title>
+
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	
+	<link rel="shortcut icon" type="image/x-icon" href="docs/images/favicon.ico" />
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js" integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew==" crossorigin=""></script>
+
+
+	<style>
+		html, body {
+			height: 100%;
+			margin: 0;
+		}
+		#map {
+			width: 600px;
+			height: 600px;
+		}
+	</style>
+
+	<style>#map { width: 900px; height: 700px; }
+.info { padding: 6px 8px; font: 14px/16px Arial, Helvetica, sans-serif; background: white; background: rgba(255,255,255,0.8); box-shadow: 0 0 15px rgba(0,0,0,0.2); border-radius: 5px; } .info h4 { margin: 0 0 5px; color: #777; }
+.legend { text-align: left; line-height: 18px; color: #555; } .legend i { width: 18px; height: 18px; float: left; margin-right: 8px; opacity: 0.7; }</style>
+</head>
+<body>
+
+<div id='map'></div>
+
+<script type="text/javascript" src="Corona_NjDATA.js"></script>
+
+<script type="text/javascript">
+
+	var map = L.map('map').setView([40.184939, -74.524073], 8); //variable for the map that sets the map's center and zoom when it is first initially opened.
+
+	L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+		maxZoom: 18,
+		attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
+			'<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+			'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+		id: 'mapbox/light-v9',
+		tileSize: 512,
+		zoomOffset: -1
+	}).addTo(map);
+
+
+	// control that shows state info on hover
+	var info = L.control();
+
+	info.onAdd = function (map) {
+		this._div = L.DomUtil.create('div', 'info');
+		this.update();
+		return this._div;
+	};
+
+	info.update = function (props) {
+		this._div.innerHTML = '<h4>April 10, 2020: New Jersey Corona Virus Deaths per County</h4>' +  (props ?
+			'<b>' + props.COUNTY_LAB + '</b><br />' + props.Corona_NJ_Data_Deaths + ' deaths'
+			: 'Hover over a county');
+	};
+
+	info.addTo(map);
+
+
+	// get color depending on population density value
+	function getColor(d) { //assigns a color depending on the below where d is (feeature.properties.density)
+		return d > 170 ? '#5b0a66' : //returns certain colors depending on density
+				d > 110  ? '#8d109d' ://the colors will be populated below in the getColor caller below that is inserted for the fillColor
+				d > 70  ? '#ba16d0' ://d is density so if density is greater than the number then the color are listed
+				d > 30  ? '#de62ef' :
+							'#e995f4';
+	}
+
+	function style(feature) {//a function that affects the styling for the geojson layer
+		return { //returns the following styling options...
+			weight: 2, //weight is se to a number
+			opacity: 1, //the opacity of the state outlines is set to a number
+			color: 'white', //color is white for thr state outlines
+			dashArray: '3', //the outlines of the state are dashed
+			fillOpacity: 0.6,//the fill in color's opacity is set to a number
+			fillColor: getColor(feature.properties.Corona_NJ_Data_Deaths) //a caller that will get the fill in color based on the states density from the function above
+		};
+	}
+
+	function highlightFeature(e) { //a function for when the cursor hovers over the states/features in the map
+		var layer = e.target; //we get access to the layer that was hovred ver using e.target
+
+		layer.setStyle({//when hovered over with mouse cursor, th layers style is set to these options
+			weight: 5, //the border thickens
+			color: '#666',//the color is a dark grey instead of the white
+			dashArray: '', //the dashed utline disappears
+			fillOpacity: 0.7//the fill opacity is still 0.7
+		});
+
+		if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+			layer.bringToFront();//these three entities browser/opera/IE have trouble being brought up to the front, so if the mouse cursor is not on any of these thee enities then..
+		}
+
+		info.update(layer.feature.properties); //if the above condition is met then the info will will be updated depending on what feature the mouse is hovering over.
+	}
+
+	var geojson; //listener
+
+	function resetHighlight(e) { //method that will reset the layer style to its default state
+		geojson.resetStyle(e.target);
+		info.update();
+	}
+
+	function zoomToFeature(e) { //a click listener that zooms in on the state
+		map.fitBounds(e.target.getBounds());
+	}
+
+	function onEachFeature(feature, layer) {
+		layer.on({ //the on eachFeatrue option adds our listeners onto our state layers
+			mouseover: highlightFeature, //adds the mousover listener which will do the highlightFeatre function
+			mouseout: resetHighlight, //adds the mouseout listenee that will set everything back to default once the cursor leaves
+			click: zoomToFeature //adds the click listener that will zoom in on the state clicked
+		});
+	}
+
+	geojson = L.geoJson(nj, { //taked the states data and adds it as a layer
+		style: style, //adds style to layer
+		onEachFeature: onEachFeature //adds on each featire to the layer
+	}).addTo(map); //adds to the map
+
+	map.attributionControl.addAttribution('Population data &copy; <a href="http://census.gov/">US Census Bureau</a>');//uses the census bureau's data
+
+
+	var legend = L.control({position: 'bottomright'}); //creates a lengend and positions it to the bottom right corner of the map
+
+	legend.onAdd = function (map) { //adds to the legend using this function
+
+		var div = L.DomUtil.create('div', 'info legend'), //creates a legend 
+			grades = [0, 30, 70, 110, 170], //an array with the levels/grades for the density that ill be displayed in the elgend
+			labels = [],//empty array for legend
+			from, to; //frm and to will be populated with the for loop below
+
+		for (var i = 0; i < grades.length; i++) { //a for loop that uses the grades array for the loop
+			from = grades[i]; //example 0 is a from number and 10 is the to number, so from is the lower starting number for that grade
+			to = grades[i + 1]; //then you take the starting number and add the next level, so for exmaple, 10 would be the to number in the first grade and (0-10)
+
+			labels.push( //the empty array will be populated with...
+				'<i style="background:' + getColor(from + 1) + '"></i> ' +
+				from + (to ? '&ndash;' + to : '+')); //styels the color of the labels with the colors of the densities from the earlier getColor function and adds 1 meaning tht the color starts with the lowest and then continues to the next grade/level and it lists the from number with a dash and then the next number for to
+		}
+
+		div.innerHTML = labels.join('<br>'); //joins labled to the div variable 
+		return div; //returns div
+	};
+
+	legend.addTo(map); //adds legend to the map
+
+</script>
+
+
+
+</body>
+</html>

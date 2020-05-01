@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset=utf-8 />
+    <title>Corona Percent Increase in NJ</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+
+   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"></script>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css"
+  integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
+  crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"
+  integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg=="
+  crossorigin=""></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: whitesmoke;
+            font-family: Lato, sans-serif;
+            color: #0D0000;
+        }
+        header {
+            padding: 6px 10%;
+        }
+        h1 {
+            display: inline-block;
+            margin-right: 20px;
+            color: #001323;
+        }
+        h2 {
+            display: inline-block;
+            color: #001323;
+        }
+        #map {
+            width: 80%;
+            height: 540px;
+            margin: 10px auto;
+        }
+        footer {
+            padding: 6px 10%;
+            width: 80%;
+        }
+        p {
+            font-size: 1em;
+            color: #001323;
+        }
+        /* Additional style rules go here! */
+
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>The Corona Virus:</h1>
+        <h2>Counties of New Jersey's Percent Increase in Confirmed Cases from April 1st to April 7th</h2>
+    </header>
+
+    <div id='map'></div>
+
+    <footer>
+        <p>Map authored by Jasmine Lamb</p>
+        
+    </footer>
+
+    <script>
+        var map;
+        var targetDiv = 'map';
+
+        var options = {
+          center: [40.184939, -74.524073],
+          zoom: 8,
+        }
+        map = L.map(targetDiv, options);
+        var tiles = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+	attribution: 'Tiles &copy; Esri &mdash; Source: Esri, DeLorme, NAVTEQ, USGS, Intermap, iPC, NRCAN, Esri Japan, METI, Esri China (Hong Kong), Esri (Thailand), TomTom, 2012'
+});
+        map.addLayer(tiles);
+        
+        
+var counties = ["Union", "Sussex", "Morris", "Warren",  "Hunterdon", "Hudson", "Monmouth", "Mercer", "Passaic", "Ocean", "Somerset", "Salem", "Bergen", "Middlesex", "Atlantic", "Camden", "Burlington", "Cumberland", "Cape May", "Gloucester", "Essex"]; 
+        
+        
+        var countyCoords = [ //STEP 3
+            [40.65835409, -74.30680092],
+            [41.13891592, -74.69118243],
+            [40.86095313, -74.54553709999998], 
+            [40.85951833, -74.99556527],  
+            [40.56335249, -74.91284156], 
+            [40.73766234, -74.07515667], 
+            [40.26549699, -74.22240686], 
+            [40.28047017, -74.70479631], 
+            [41.03238628, -74.29954144], 
+            [39.8895449, -74.28089251], 
+            [40.56465737, -74.61683016], 
+            [39.58719656, -75.34696629999998], 
+            [40.96010917, -74.07164325], 
+            [40.43629879, -74.41426991], 
+            [39.47538693, -74.65848483], 
+            [39.80343818, -74.96388753], 
+            [39.87681124, -74.66927768], 
+            [39.37199394, -75.10712559], 
+            [39.15008829, -74.80170244], 
+            [39.71581067, -75.13995546], 
+            [40.78681335, -74.24657979]
+        ];
+   
+         
+           
+       var union = 2707 
+       var sussex = 173 
+       var morris = 1297
+       var warren =159
+       var hunterdon = 117
+       var hudson = 3039 
+       var monmouth = 1469 
+       var mercer = 504 
+       var passiac = 2610 
+       var ocean = 1432 
+       var somerset = 561 
+       var salem = 12 
+       var bergen = 4039 
+       var middlesex = 2224 
+       var atlantic = 104 
+       var camden = 447 
+       var burlington = 478 
+       var cumberland = 44 
+       var capeMay = 72 
+       var gloucester = 162 
+       var essex = 2816
+       
+       var unionDivide = divisionOg(union, 1661)
+       var sussexDivide = divisionOg(sussex, 158)
+       var morrisDivide = divisionOg(morris, 942)
+       var warrenDivide = divisionOg(warren, 96)
+       var hunterdonDivide = divisionOg(hunterdon, 117)
+       var hudsonDivide = divisionOg(hudson, 1910)
+       var monmouthDivide = divisionOg(monmouth, 1301)
+       var mercerDivide = divisionOg(mercer, 333)
+       var passiacDivide = divisionOg(passiac, 1494)
+       var oceanDivide = divisionOg(ocean, 1209)
+       var somersetDivide = divisionOg(somerset, 472)
+       var salemDivide = divisionOg(salem, 19)
+       var bergenDivide = divisionOg(bergen, 3494)
+       var middlesexDivide = divisionOg(middlesex, 1493)
+       var atlanticDivide = divisionOg(atlantic, 40)
+       var camdenDivide = divisionOg(camden, 289)
+       var burlingtonDivide = divisionOg(burlington, 255)
+       var cumberlandDivide = divisionOg(cumberland, 27)
+       var capeMayDivide = divisionOg(capeMay, 22)
+       var gloucesterDivide = divisionOg(gloucester, 149)
+       var essexDivide = divisionOg(essex, 2262)
+       
+       
+       var percentChanges = [unionDivide, sussexDivide, morrisDivide, warrenDivide, hunterdonDivide, hudsonDivide, monmouthDivide, mercerDivide, passiacDivide, oceanDivide, somersetDivide, salemDivide, bergenDivide, middlesexDivide, atlanticDivide, camdenDivide, burlingtonDivide, cumberlandDivide, capeMayDivide, gloucesterDivide, essexDivide]; 
+        
+     console.log(percentChanges);
+        
+        function divisionOg(change, original) {
+        var divide = change/original
+        var percentage = divide*100
+        return Math.round(percentage)
+    };
+        
+        for(var i = 0; i < counties.length; i++) { 
+            
+             if (percentChanges[i] > 250) { 
+                 var popup = "<b>"+counties[i]+" County</b><br>"+"<b>Percent Increase in a week</b>: "+percentChanges[i]+"%";
+            L.circleMarker([countyCoords[i][0],countyCoords[i][1]], {
+                color: '#041ddb',
+                 weight: 2,
+                 fillColor: '#041ddb',
+                 fillOpacity: .5,
+                 stroke: false,
+                 radius: 50
+            } )
+                .addTo(map)   
+                .bindPopup(popup) 
+            }
+        else if (percentChanges[i] >= 150){
+           var popup = "<b>"+counties[i]+" County</b><br>"+"<b>Percent Increase in a week</b>: "+percentChanges[i]+"%";
+            L.circleMarker([countyCoords[i][0],countyCoords[i][1]], {
+                color: '#029ffa',
+                 weight: 2,
+                 fillColor: '#029ffa',
+                 fillOpacity: .5,
+                 stroke: false,
+                radius: 25
+            } )
+                .addTo(map)   
+                .bindPopup(popup) }
+            else {
+                var popup = "<b>"+counties[i]+" County</b><br>"+"<b>Percent Increase in a week</b>: "+percentChanges[i]+"%";
+                L.circleMarker([countyCoords[i][0],countyCoords[i][1]], {
+                    color: '#03ebfc',
+                 weight: 2,
+                 fillColor: '#03ebfc',
+                 fillOpacity: .4,
+                 stroke: false,
+                  radius: 12.5
+                } )
+                .addTo(map)   
+                .bindPopup(popup)
+            };
+            
+          
+   
+         
+   
+            
+            
+            
+ 
+        }
+        
+        
+        
+
+
+        
+          
+    </script>
+    
+</body>

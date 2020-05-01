@@ -1,0 +1,50 @@
+  <html>
+  <head>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+      google.charts.load('current', {'packages':['corechart']});
+      google.charts.setOnLoadCallback(drawChart);
+
+      function drawChart() {
+        var data = google.visualization.arrayToDataTable([
+          ['Date', 'Confirmed Cases', 'Deaths'],
+          ['March 10th',  15,       1],
+          ['March 11th',  23,       1],
+          ['March 12th',  29,       1],
+          ['March 13th',  29,       1],
+          ['March 14th',  69,       1],
+          ['March 15th',  98,       2],
+          ['March 16th',  178,      2],
+          ['March 17th',  267,      3],
+          ['March 18th',  267,      3],
+          ['March 19th',  742,      9],
+          ['March 20th',  890,     11],
+          ['March 21st',  1327,    16],
+          ['March 22nd',  1914,    22],
+          ['March 23rd',  2844,    22],
+          ['March 24th',  3675,    44],
+          ['March 25th',  4402,    62],
+          ['March 26th',  6876,    81],
+          ['March 27th',  8825,   108],
+          ['March 28th',  11124,  140],
+          ['March 29th',  13386,  161],
+          ['March 30th',  16636,  198], 
+          ['March 31st',  18620,  267], 
+        ]);
+
+        var options = {
+          title: 'New Jersey Confirmed Cases and Deaths from March 10th to March 31st',
+          curveType: 'function',
+          legend: { position: 'bottom' }
+        };
+
+        var chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
+
+        chart.draw(data, options);
+      }
+    </script>
+  </head>
+  <body>
+    <div id="curve_chart" style="width: 1200px; height: 600px"></div>
+  </body>
+</html>

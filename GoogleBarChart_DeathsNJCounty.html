@@ -1,0 +1,63 @@
+<html>
+  <head>
+    <!--Load the AJAX API-->
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+
+      // Load the Visualization API and the corechart package.
+      google.charts.load('current', {'packages':['corechart']});
+
+      // Set a callback to run when the Google Visualization API is loaded.
+      google.charts.setOnLoadCallback(drawChart);
+
+      // Callback that creates and populates a data table,
+      // instantiates the pie chart, passes in the data and
+      // draws it.
+      function drawChart() {
+
+        // Create the data table.
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'New Jersey Counties');
+        data.addColumn('number', 'Deaths');
+        data.addRows([
+            ['Bergen', 390],
+            ['Essex', 352],
+            ['Middlesex', 168],
+            ['Hudson', 163],
+            ['Union', 161],
+            ['Morris', 135],
+            ['Ocean', 121],
+            ['Monmouth', 107],
+            ['Passaic', 101],
+            ['Somerset', 69],
+            ['Mercer', 39],
+            ['Camden', 29],
+            ['Sussex', 26],
+            ['Burlington', 22],
+            ['Warren', 15],
+            ['Gloucester', 8],
+            ['Hunterdon', 7],
+            ['Atantic', 6],
+            ['Cape May', 5],
+            ['Salem', 3],
+            ['Cumberland', 3]
+          
+        ]);
+
+        // Set chart options
+        var options = {'title':'Covid-19 Related Deaths by New Jersey County as of April 10th',
+                       'width':500,
+                       'height':600};
+
+        // Instantiate and draw our chart, passing in some options.
+        var chart = new google.visualization.BarChart(document.getElementById('chart_div'));
+        chart.draw(data, options);
+      }
+    </script>
+  </head>
+
+  <body>
+    <!--Div that will hold the pie chart-->
+    <div id="chart_div"></div>
+  </body>
+</html>
